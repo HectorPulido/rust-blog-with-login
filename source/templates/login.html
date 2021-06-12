@@ -1,0 +1,45 @@
+{% include "header.html" ignore missing %}
+<link href="/static/css/login.css" rel="stylesheet">
+
+<main class="form-signin container text-center">
+    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+    <div class="form-floating">
+        <input type="text" class="form-control" id="floatingInput" placeholder="username">
+        <label for="floatingInput">Username</label>
+    </div>
+    <div class="form-floating">
+        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword">Password</label>
+    </div>
+
+    <button class="w-100 btn btn-lg btn-primary" onclick="login()">Sign in</button>
+</main>
+
+<script>
+    function login() {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "username": document.getElementById('floatingInput').value,
+            "password": document.getElementById('floatingPassword').value
+        });
+
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("/user/login/", requestOptions)
+            .then(result => {
+                window.location.replace("/");
+            })
+            .catch(error => console.log('error', error));
+    }
+</script>
+
+{% include "footer.html" ignore missing %}

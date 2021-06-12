@@ -6,7 +6,7 @@
         <p class="lead">{{ post.body }}</p>
     </div>
 
-    {% if not post.published %}
+    {% if not post.published and is_admin %}
     <div>
         <button type="submit" class="btn btn-primary mb-3" onclick="publish()">Publish</button>
     </div>
@@ -23,7 +23,7 @@
 
         var raw = JSON.stringify({
             "id": parseInt(post_id),
-            "activate": true
+            "published": true
         });
 
         var requestOptions = {

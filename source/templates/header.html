@@ -37,8 +37,14 @@
             <a class="navbar-brand" href="/">Home</a>
         </div>
         <div class="d-flex search-button">
+            {% if logged %}
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <a class="btn btn-outline-success" href="/post-creation/">Create post</a>
             </div>
+            {% else %}
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <a class="btn btn-outline-success" href="/user/login/">Login</a>
+            </div>
+            {% endif %}
         </div>
     </nav>
