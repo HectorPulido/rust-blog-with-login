@@ -19,11 +19,11 @@ This is a Crud blog made with Rust + Actix + Diesel + HerokuPostgres, the fronte
 4. docker run -d --name <appname> -e "PORT=8765" -p 8007:8765 <appname>
 
 ## How to Deploy
-heroku login
-docker ps
-heroku container:login
-heroku container:push web -a <appname>
-heroku container:release web -a <appname>
+1. heroku login
+2. docker ps
+3. heroku container:login
+4. heroku container:push web -a <appname>
+5. heroku container:release web -a <appname>
 
 <div align="center">
 <h3 align="center">Let's connect 😋</h3>
