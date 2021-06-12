@@ -1,0 +1,46 @@
+{% include "header.html" ignore missing %}
+
+<main class="container">
+    <div class="bg-light p-5 rounded">
+        <h1>{{ post.title }}</h1>
+        <p class="lead">{{ post.body }}</p>
+    </div>
+
+    {% if not post.published %}
+    <div>
+        <button type="submit" class="btn btn-primary mb-3" onclick="publish()">Publish</button>
+    </div>
+    {% endif %}
+</main>
+
+{% if not post.published %}
+<script>
+    let post_id = "{{ post.id }}";
+    function publish() {
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "id": parseInt(post_id),
+            "activate": true
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("/toggle-a-post/", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                location.reload();
+            })
+            .catch(error => console.log('error', error));
+    }
+</script>
+{% endif %}
+
+{% include "footer.html" ignore missing %}

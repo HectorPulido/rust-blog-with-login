@@ -1,0 +1,13 @@
+{% include "header.html" ignore missing %}
+
+<main class="container">
+    {% for post in posts %}
+
+    <div class="bg-light p-5 rounded">
+        <a class="h1" href="/post/{{ post.id }}/">{{ post.title }}</a>
+        <p class="lead">{{ post.body | truncate(length=150) }}</p>
+    </div>
+    {% endfor %}
+</main>
+
+{% include "footer.html" ignore missing %}

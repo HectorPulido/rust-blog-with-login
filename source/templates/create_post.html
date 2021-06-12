@@ -1,0 +1,46 @@
+{% include "header.html" ignore missing %}
+
+<main class="container">
+    <div class="bg-light p-5 rounded">
+        <div class="mb-3">
+            <label for="post_title" class="form-label">Post title</label>
+            <input class="form-control" id="post_title">
+        </div>
+        <div class="mb-3">
+            <label for="post_body" class="form-label">Post body</label>
+            <textarea class="form-control" id="post_body" rows="3"></textarea>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary mb-3" onclick="send_post()">Send post</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    function send_post() {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "title": document.getElementById('post_title').value,
+            "body": document.getElementById('post_body').value,
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("/", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                let data = JSON.parse(result);
+                window.location.replace("/post/" + data.id + "/");
+            })
+            .catch(error => console.log('error', error));
+    }
+</script>
+
+{% include "footer.html" ignore missing %}
