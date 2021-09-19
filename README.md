@@ -12,10 +12,6 @@ This is a Crud blog made with Rust + Actix + Diesel + HerokuPostgres, the fronte
 * Admin permission
 
 
-
-## How it works
-This is a heroku based project
-
 ### Setup Django
 
 1. cp .env.test .env
