@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install curl pkg-config libssl-dev build-essential
 WORKDIR /app
 
 COPY --from=0 /app/.env /app
-COPY --from=0 /app/target/release/ /app
+COPY --from=0 /app/target/release/diesel_demo /app
 
 COPY /source/templates/ /app/templates
 COPY /source/static/ /app/static
