@@ -7,12 +7,16 @@ use super::super::schema::posts::dsl::*;
 use super::super::DbPool;
 use actix_web::{web, HttpResponse, Responder};
 
-pub async fn get_posts(tmpl: web::Data<tera::Tera>, pool: web::Data<DbPool>, user: Option<User>) -> impl Responder {
+pub async fn get_posts(
+    tmpl: web::Data<tera::Tera>,
+    pool: web::Data<DbPool>,
+    user: Option<User>,
+) -> impl Responder {
     let conn = pool.get().expect("could not get db connection");
 
     let is_logged = match user {
         Some(_) => true,
-        None => false
+        None => false,
     };
 
     let results = web::block(move || {
@@ -52,7 +56,7 @@ pub async fn get_posts(tmpl: web::Data<tera::Tera>, pool: web::Data<DbPool>, use
 pub async fn create_a_post(
     pool: web::Data<DbPool>,
     item: web::Json<NewPostHandler>,
-    user: User
+    user: User,
 ) -> impl Responder {
     let conn = pool.get().expect("could not get db connection");
 
@@ -71,7 +75,7 @@ pub async fn create_a_post(
 pub async fn toggle_a_post(
     pool: web::Data<DbPool>,
     item: web::Json<PostToggleHandler>,
-    user: User
+    user: User,
 ) -> impl Responder {
     let conn = pool.get().expect("could not get db connection");
 
@@ -93,9 +97,9 @@ pub async fn toggle_a_post(
 }
 
 pub async fn delete_a_post(
-    pool: web::Data<DbPool>, 
-    post_id: web::Path<i32>, 
-    user: User
+    pool: web::Data<DbPool>,
+    post_id: web::Path<i32>,
+    user: User,
 ) -> impl Responder {
     let conn = pool.get().expect("could not get db connection");
 
@@ -116,18 +120,18 @@ pub async fn specific_post(
     tmpl: web::Data<tera::Tera>,
     pool: web::Data<DbPool>,
     post_id: web::Path<i32>,
-    user: Option<User>
+    user: Option<User>,
 ) -> impl Responder {
     let conn = pool.get().expect("could not get db connection");
 
     let is_logged = match user {
         Some(_) => true,
-        None => false
+        None => false,
     };
 
     let is_admin = match user {
         Some(user) => user.is_admin,
-        None => false
+        None => false,
     };
 
     let results = web::block(move || {
@@ -168,7 +172,6 @@ pub async fn specific_post(
 }
 
 pub async fn post_creation(tmpl: web::Data<tera::Tera>, user: User) -> impl Responder {
-
     if !user.is_admin {
         return HttpResponse::Unauthorized().finish();
     }

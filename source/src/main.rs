@@ -1,20 +1,34 @@
+pub mod models;
+pub mod schema;
+pub mod views;
+
+#[macro_use]
 extern crate diesel;
-extern crate diesel_demo;
 extern crate dotenv;
 
 use actix_files as fs;
-use std::env;
-use tera::Tera;
-use dotenv::dotenv;
-use diesel::r2d2::Pool;
-use self::diesel_demo::*;
-use self::diesel_demo::views::post::*;
-use self::diesel_demo::views::user::*;
-use self::diesel_demo::models::session::*;
-use std::{collections::HashMap, sync::RwLock};
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{web, App, HttpServer};
+use diesel::r2d2::Pool;
+use dotenv::dotenv;
+use models::session::*;
+use std::env;
+use std::{collections::HashMap, sync::RwLock};
+use tera::Tera;
+use views::post::*;
+use views::user::*;
 
+use diesel::pg::PgConnection;
+use diesel::r2d2;
+use diesel::r2d2::ConnectionManager;
+
+pub type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
+
+pub fn get_connection_manager() -> ConnectionManager<PgConnection> {
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    return ConnectionManager::<PgConnection>::new(database_url);
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -58,8 +72,8 @@ async fn main() -> std::io::Result<()> {
             .route("/user/login/", web::get().to(login_template))
             .route("/user/login/", web::post().to(login))
             .route("/user/logout/", web::get().to(logout))
-        })
-    .bind(format!("{}:{}",host,port))?
+    })
+    .bind(format!("{}:{}", host, port))?
     .run()
     .await
 }

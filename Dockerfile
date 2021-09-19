@@ -18,4 +18,4 @@ COPY --from=0 /app/target/release/ /app
 COPY /source/templates/ /app/templates
 COPY /source/static/ /app/static
 
-CMD ./web_server
+CMD ./diesel_demo

@@ -1,7 +1,6 @@
 # Crud-Blog with Login made with Rust 
 
-This is a Crud blog made with Rust + Actix + Diesel + HerokuPostgres, the frontend was made with Tera + bootstrap, you can test it here: https://blog-rs.herokuapp.com/
-
+This is a Crud blog made with Rust + Actix + Diesel + HerokuPostgres, the frontend was made with Tera + bootstrap.
 
 ## Features
 
@@ -12,18 +11,51 @@ This is a Crud blog made with Rust + Actix + Diesel + HerokuPostgres, the fronte
 * Login
 * Admin permission
 
-## How to use
-1. cp .env.test .env
-2. modify the .env to add your credentials
-3. docker build -t <appname> .
-4. docker run -d --name <appname> -e "PORT=8765" -p 8007:8765 <appname>
 
-## How to Deploy
-1. heroku login
-2. docker ps
-3. heroku container:login
-4. heroku container:push web -a <appname>
-5. heroku container:release web -a <appname>
+
+## How it works
+This is a heroku based project
+
+### Setup Django
+
+1. cp .env.test .env
+
+2. modify the .env and add your credentials
+
+3. Configure your heroku project, save the name, you will need the Heroku Postgresql addon
+
+4. Build the docker development and run it to make sure everything is ok
+
+```
+docker build -t web:latest .
+docker run -d --name <herokuname> -e "PORT=8765" -e "DEBUG=0" -p 8007:8765 web:latest
+```
+
+5. You can deactivate the container like this
+```
+docker stop <herokuname>
+docker rm <herokuname>
+```
+
+6. You can upload your project with this commands
+```
+docker run -d --name <herokuname> -e "PORT=8765" -e "DEBUG=0" -p 8007:8765 web:latest
+heroku login
+heroku container:login
+heroku container:push web -a <herokuname>
+heroku container:release web -a <herokuname>
+```
+
+7. Enter to your proyect from this url
+```
+http://<herokuname>.herokuapp.com/
+```
+
+8. You are ready
+
+
+## Licence
+This proyect was totally handcrafted by me, so the licence is MIT, use it as you want.
 
 <div align="center">
 <h3 align="center">Let's connect 😋</h3>
@@ -37,5 +69,3 @@ This is a Crud blog made with Rust + Actix + Diesel + HerokuPostgres, the fronte
 <img align="center" width="30px" alt="Hector's Twitch" src="https://www.vectorlogo.zone/logos/twitch/twitch-icon.svg"/></a> &nbsp; &nbsp;
 <a href="https://www.youtube.com/channel/UCS_iMeH0P0nsIDPvBaJckOw" target="blank">
 <img align="center" width="30px" alt="Hector's Youtube" src="https://www.vectorlogo.zone/logos/youtube/youtube-icon.svg"/></a> &nbsp; &nbsp;
-
-</p>
