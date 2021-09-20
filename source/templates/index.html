@@ -4,7 +4,7 @@
     {% for post in posts %}
 
     <div class="bg-light p-5 rounded">
-        <a class="h1" href="/post/{{ post.id }}/">{{ post.title }}</a>
+        <a class="h1" href="/post/{{ post.slug }}/">{{ post.title }}</a>
         <p class="lead">{{ post.body | truncate(length=150) }}</p>
     </div>
     {% endfor %}

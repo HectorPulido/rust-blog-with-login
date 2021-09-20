@@ -5,8 +5,9 @@ use super::super::models::post::*;
 use super::super::models::user::*;
 use super::super::schema::posts::dsl::*;
 use super::super::DbPool;
-use actix_web::{web, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpResponse, Responder};
 
+#[get("/")]
 pub async fn get_posts(
     tmpl: web::Data<tera::Tera>,
     pool: web::Data<DbPool>,
@@ -53,6 +54,7 @@ pub async fn get_posts(
     return response;
 }
 
+#[post("/")]
 pub async fn create_a_post(
     pool: web::Data<DbPool>,
     item: web::Json<NewPostHandler>,
@@ -72,54 +74,11 @@ pub async fn create_a_post(
     }
 }
 
-pub async fn toggle_a_post(
-    pool: web::Data<DbPool>,
-    item: web::Json<PostToggleHandler>,
-    user: User,
-) -> impl Responder {
-    let conn = pool.get().expect("could not get db connection");
-
-    if !user.is_admin {
-        return HttpResponse::Unauthorized().finish();
-    }
-
-    let results = web::block(move || {
-        diesel::update(posts.find(item.id))
-            .set(published.eq(item.published))
-            .get_result::<Post>(&conn)
-    })
-    .await;
-
-    match results {
-        Ok(x) => HttpResponse::Ok().json(x),
-        Err(_) => HttpResponse::InternalServerError().finish(),
-    }
-}
-
-pub async fn delete_a_post(
-    pool: web::Data<DbPool>,
-    post_id: web::Path<i32>,
-    user: User,
-) -> impl Responder {
-    let conn = pool.get().expect("could not get db connection");
-
-    if !user.is_admin {
-        return HttpResponse::Unauthorized().finish();
-    }
-
-    let results =
-        web::block(move || diesel::delete(posts.find(post_id.into_inner())).execute(&conn)).await;
-
-    match results {
-        Ok(x) => HttpResponse::Ok().json(x),
-        Err(_) => HttpResponse::InternalServerError().finish(),
-    }
-}
-
+#[get("/post/{post_slug}/")]
 pub async fn specific_post(
     tmpl: web::Data<tera::Tera>,
     pool: web::Data<DbPool>,
-    post_id: web::Path<i32>,
+    web::Path(post_slug): web::Path<String>,
     user: Option<User>,
 ) -> impl Responder {
     let conn = pool.get().expect("could not get db connection");
@@ -136,7 +95,7 @@ pub async fn specific_post(
 
     let results = web::block(move || {
         posts
-            .filter(id.eq(post_id.into_inner()))
+            .filter(slug.eq(post_slug))
             .limit(1)
             .load::<Post>(&conn)
     })
@@ -171,6 +130,28 @@ pub async fn specific_post(
     return response;
 }
 
+#[post("/post/{id}/")]
+pub async fn delete_a_post(
+    pool: web::Data<DbPool>,
+    post_id: web::Path<i32>,
+    user: User,
+) -> impl Responder {
+    let conn = pool.get().expect("could not get db connection");
+
+    if !user.is_admin {
+        return HttpResponse::Unauthorized().finish();
+    }
+
+    let results =
+        web::block(move || diesel::delete(posts.find(post_id.into_inner())).execute(&conn)).await;
+
+    match results {
+        Ok(x) => HttpResponse::Ok().json(x),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+#[post("/post-creation/")]
 pub async fn post_creation(tmpl: web::Data<tera::Tera>, user: User) -> impl Responder {
     if !user.is_admin {
         return HttpResponse::Unauthorized().finish();
@@ -186,5 +167,30 @@ pub async fn post_creation(tmpl: web::Data<tera::Tera>, user: User) -> impl Resp
             println!("Template error: {}", e);
             HttpResponse::InternalServerError().finish()
         }
+    }
+}
+
+#[post("/toggle-a-post/")]
+pub async fn toggle_a_post(
+    pool: web::Data<DbPool>,
+    item: web::Json<PostToggleHandler>,
+    user: User,
+) -> impl Responder {
+    let conn = pool.get().expect("could not get db connection");
+
+    if !user.is_admin {
+        return HttpResponse::Unauthorized().finish();
+    }
+
+    let results = web::block(move || {
+        diesel::update(posts.find(item.id))
+            .set(published.eq(item.published))
+            .get_result::<Post>(&conn)
+    })
+    .await;
+
+    match results {
+        Ok(x) => HttpResponse::Ok().json(x),
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
